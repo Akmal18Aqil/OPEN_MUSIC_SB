@@ -1,0 +1,30 @@
+{
+  "name": "openmusic_submission",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon ./src/server.js",
+    "lint": "eslint ./src",
+    "lint:fix": "eslint --fix ./src",
+    "migrate": "node-pg-migrate"
+  },
+  "keywords": [],
+  "author": "Akmal Aqil Wahyu",
+  "license": "ISC",
+  "dependencies": {
+    "@hapi/hapi": "^21.3.12",
+    "dotenv": "^16.4.7",
+    "joi": "^17.13.3",
+    "nanoid": "^5.0.9",
+    "node-pg-migrate": "^7.9.0",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.1",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.31.0",
+    "globals": "^15.14.0",
+    "nodemon": "^3.1.9"
+  }
+}

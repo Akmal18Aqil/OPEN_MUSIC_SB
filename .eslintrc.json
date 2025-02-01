@@ -1,0 +1,43 @@
+{
+    "extends": [
+        "airbnb-base"
+    ],
+    "env": {
+        "node": true
+    },
+    "rules": {
+        "no-console": "off",
+        "strict": [
+            "error",
+            "global"
+        ],
+        "import/no-commonjs": "off",
+        "import/no-extraneous-dependencies": [
+            "error",
+            {
+                "devDependencies": true
+            }
+        ],
+        "no-underscore-dangle": [
+            "error",
+            {
+                "allow": [
+                    "_service",
+                    "_validator",
+                    "_albums",
+                    "_songs",
+                    "_songService",
+                    "_pool"
+                ]
+            }
+        ],
+        "camelcase": [
+            "error",
+            {
+                "properties": "never",
+                "ignoreDestructuring": true
+            }
+        ],
+        "no-shadow": "off"
+    }
+}

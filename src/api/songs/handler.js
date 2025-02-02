@@ -15,15 +15,31 @@ class SongHandler {
     this._validator.validateSongPayload(request.payload);
     const songId = await this._service.addSong(request.payload);
 
-    
-    
+    // console.error(error);
     return h.response({
-        status: 'success',
-        message : 'berhasil',
-        data: { songId },
-      })
+      status: 'success',
+      message: 'berhasil',
+      data: { songId },
+    })
       .code(201);
   }
+  // async postSongHandler(request, h) {
+  //   try {
+  //     this._validator.validateSongPayload(request.payload);
+  //     const songId = await this._service.addSong(request.payload);
+
+  //     return h.response({
+  //       status: 'success',
+  //       data: { songId },
+  //     }).code(201);
+  //   } catch (error) {
+  //     console.error(error); // Cetak error di terminal/log
+  //     return h.response({
+  //       status: 'fail',
+  //       message: error.message,
+  //     }).code(500);
+  //   }
+  // }
 
   // Handler get songs
   async getSongHandler(request) {

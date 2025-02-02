@@ -35,7 +35,8 @@
             "error",
             {
                 "properties": "never",
-                "ignoreDestructuring": true
+                "ignoreDestructuring": true,
+                "allow": ["album_id"]
             }
         ],
         "no-shadow": "off"

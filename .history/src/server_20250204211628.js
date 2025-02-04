@@ -15,8 +15,6 @@ require('dotenv').config();
 const init = async () => {
   const albumsService = new AlbumService();
   const songsService = new SongService();
-  const usersService = new UsersService();
-  const authenticationsService = new AuthenticationsService();
   const server = Hapi.server({
     port: process.env.PORT,
     host: process.env.HOST,

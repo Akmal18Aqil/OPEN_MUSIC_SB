@@ -37,15 +37,6 @@ const init = async () => {
   });
   await server.register([
     {
-      plugin: Jwt,
-    },
-    // {
-    //   plugin: Inert,
-    // },
-  ]);
-
-  await server.register([
-    {
       plugin: albums,
       options: {
         service: albumsService,

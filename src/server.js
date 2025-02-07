@@ -65,9 +65,7 @@ const init = async () => {
     {
       plugin: Jwt,
     },
-    // {
-    //   plugin: Inert,
-    // },
+    
   ]);
   // mendefinisikan strategy autentikasi jwt
   server.auth.strategy('songsapp_jwt', 'jwt', {
@@ -151,22 +149,7 @@ const init = async () => {
         validator: PlaylistSongsActivitiesValidator,
       },
     },
-    // {
-    //   plugin: _exports,
-    //   options: {
-    //     ProducerService,
-    //     playlistsService,
-    //     validator: ExportsValidator,
-    //   },
-    // },
-    // {
-    //   plugin: uploads,
-    //   options: {
-    //     service: storageService,
-    //     albumsService,
-    //     validator: UploadsValidator,
-    //   },
-    // },
+   
   ]);
   server.ext('onPreResponse', (request, h) => {
     const { response } = request;

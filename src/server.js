@@ -5,11 +5,11 @@ const Jwt = require('@hapi/jwt');
 const albums = require('./api/albums');
 const AlbumService = require('./service/postgres/AlbumService');
 const AlbumsValidator = require('./validator/albums');
-//Kelompok Song
+// Kelompok Song
 const songs = require('./api/songs');
 const SongService = require('./service/postgres/SongService');
 const SongsValidator = require('./validator/songs');
-//kelompok User
+// kelompok User
 const users = require('./api/users');
 const UsersService = require('./service/postgres/UsersService');
 const UsersValidator = require('./validator/users');
@@ -45,15 +45,15 @@ const init = async () => {
   const songsService = new SongService();
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
-  const playlistsService = new PlaylistsService();
   const collaborationService = new CollaborationsService();
+  const playlistsService = new PlaylistsService(collaborationService);
   const playlistSongsService = new PlaylistSongsService();
   const playlistSongsActivitiesService = new PlaylistSongsActivitiesService();
   const server = Hapi.server({
     port: process.env.PORT,
     host: process.env.HOST,
     debug: {
-      request:['error'] ,
+      request: ['error'],
     },
     routes: {
       cors: {
@@ -65,9 +65,9 @@ const init = async () => {
     {
       plugin: Jwt,
     },
-    
+
   ]);
-  // mendefinisikan strategy autentikasi jwt
+  // ini mendefinisikan strategy autentikasi jwt
   server.auth.strategy('songsapp_jwt', 'jwt', {
     keys: process.env.ACCESS_TOKEN_KEY,
     verify: {
@@ -149,7 +149,7 @@ const init = async () => {
         validator: PlaylistSongsActivitiesValidator,
       },
     },
-   
+
   ]);
   server.ext('onPreResponse', (request, h) => {
     const { response } = request;

@@ -12,14 +12,14 @@ module.exports = {
       playlistsService,
       songsService,
       collaborationsService,
-    }
+    },
   ) => {
     const playlistSongsHandler = new PlaylistSongsHandler(
       playlistSongsService,
       validator,
       playlistsService,
       songsService,
-      collaborationsService
+      collaborationsService,
     );
     server.route(routes(playlistSongsHandler));
   },

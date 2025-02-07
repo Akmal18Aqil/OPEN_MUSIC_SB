@@ -1,4 +1,3 @@
-
 const InvariantError = require('../../exceptions/InvariantError');
 const { PlaylistsSongPayloadSchema } = require('./schema');
 

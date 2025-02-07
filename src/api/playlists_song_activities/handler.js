@@ -4,8 +4,7 @@ class PlaylistSongsActivitiesHandler {
     this._playlistService = playlistService;
     this._validator = validator;
 
-    this.getPlaylistSongsActivitiesHandler =
-      this.getPlaylistSongsActivitiesHandler.bind(this);
+    this.getPlaylistSongsActivitiesHandler = this.getPlaylistSongsActivitiesHandler.bind(this);
   }
 
   async getPlaylistSongsActivitiesHandler(request, h) {
@@ -21,7 +20,7 @@ class PlaylistSongsActivitiesHandler {
 
     const response = h.response({
       status: 'success',
-      data: data,
+      data,
     });
     response.code(200);
     return response;

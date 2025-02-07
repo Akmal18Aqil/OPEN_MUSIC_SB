@@ -6,6 +6,7 @@
         "node": true
     },
     "rules": {
+        "max-len": ["error", { "code": 155 }],
         "no-console": "off",
         "strict": [
             "error",
@@ -27,7 +28,15 @@
                     "_albums",
                     "_songs",
                     "_songService",
-                    "_pool"
+                    "_pool",
+                    "_authenticationsService",
+                    "_usersService",
+                    "_tokenManager",
+                    "_collaborationService",
+                    "_collaborationsService",
+                    "_playlistsService",
+                    "_playlistSongsService",
+                    "_playlistService"
                 ]
             }
         ],
@@ -36,7 +45,7 @@
             {
                 "properties": "never",
                 "ignoreDestructuring": true,
-                "allow": ["album_id"]
+                "allow": ["album_id", "created_at", "updated_at"]
             }
         ],
         "no-shadow": "off"

@@ -75,7 +75,7 @@ class PlaylistSongService {
 
     if (!result.rowCount) {
       throw new InvariantError(
-        'Lagu gagal dihapus dari playlist. Id tidak ditemukan'
+        'Lagu gagal dihapus dari playlist. Id tidak ditemukan',
       );
     }
 

@@ -1,5 +1,7 @@
 const Hapi = require('@hapi/hapi');
 const Jwt = require('@hapi/jwt');
+const path = require('path');
+const Inert = require('@hapi/inert');
 
 // Kelompok Album
 const albums = require('./api/albums');
@@ -34,6 +36,14 @@ const PlaylistsSongValidator = require('./validator/playlist_songs');
 const playlistSongsActivities = require('./api/playlists_song_activities');
 const PlaylistSongsActivitiesService = require('./service/postgres/PlaylistSongActivitiesService');
 const PlaylistSongsActivitiesValidator = require('./validator/playlist_song_activities');
+// Kelompok exports
+const _exports = require('./api/exports');
+const ProducerService = require('./service/rabbitmq/ProducerService');
+const ExportsValidator = require('./validator/exports');
+// Kelompok Uploads
+const uploads = require('./api/uploads');
+const StorageService = require('./service/storage/StorageService');
+const UploadsValidator = require('./validator/upload');
 
 // Ekseptions
 const ClientError = require('./exceptions/ClientError');
@@ -49,6 +59,9 @@ const init = async () => {
   const playlistsService = new PlaylistsService(collaborationService);
   const playlistSongsService = new PlaylistSongsService();
   const playlistSongsActivitiesService = new PlaylistSongsActivitiesService();
+  const storageService = new StorageService(
+    path.resolve(__dirname, 'api/uploads/file/pictures')
+  );
   const server = Hapi.server({
     port: process.env.PORT,
     host: process.env.HOST,
@@ -65,6 +78,10 @@ const init = async () => {
     {
       plugin: Jwt,
     },
+    {
+      plugin: Inert,
+    }
+
 
   ]);
   // ini mendefinisikan strategy autentikasi jwt
@@ -149,21 +166,65 @@ const init = async () => {
         validator: PlaylistSongsActivitiesValidator,
       },
     },
+    {
+      plugin: _exports,
+      options: {
+        ProducerService,
+        playlistsService,
+        validator: ExportsValidator,
+      },
+    },
+    {
+      plugin: uploads,
+      options: {
+        service: storageService,
+        albumsService,
+        validator: UploadsValidator,
+      },
+    },
 
   ]);
-  server.ext('onPreResponse', (request, h) => {
+  await server.ext('onPreResponse', (request, h) => {
     const { response } = request;
 
     if (response instanceof ClientError) {
-      const newResponse = h.response({
-        status: 'fail',
-        message: response.message,
-      });
-      newResponse.code(response.statusCode);
-      return newResponse;
+      console.log(response);
+      return h
+        .response({
+          status: 'fail',
+          message: response.message,
+        })
+        .code(response.statusCode);
     }
 
-    return h.continue;
+    if (response instanceof Error) {
+      const { statusCode, payload } = response.output;
+
+      switch (statusCode) {
+      case 401:
+        return h.response(payload).code(401);
+      case 404:
+        return h.response(payload).code(404);
+      case 413: 
+        return h
+          .response({
+            status: 'fail',
+            message: 'Ukuran file terlalu besar, maksimal 512 KB',
+          })
+          .code(413);
+      default:
+        console.log(response);
+        return h
+          .response({
+            status: 'error',
+            error: payload.error,
+            message: payload.message,
+          })
+          .code(500);
+      }
+    }
+
+    return response.continue || response;
   });
   await server.start();
   console.log(`server berjalan pada ${server.info.uri}`);

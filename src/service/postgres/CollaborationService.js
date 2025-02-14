@@ -22,7 +22,6 @@ class CollaborationsService {
     if (!result.rows.length) {
       throw new InvariantError('Kolaborasi gagal ditambahkan');
     }
-    // await this._collaborationService.delete(`collaborations:${userId}`);
     return result.rows[0].id;
   }
 
@@ -37,8 +36,6 @@ class CollaborationsService {
     if (!result.rows.length) {
       throw new InvariantError('Kolaborasi gagal dihapus');
     }
-
-    // await this._collaborationService.delete(`collaborations:${userId}`);
   }
 
   async verifyCollaborator(playlistId, userId) {

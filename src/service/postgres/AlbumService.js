@@ -5,8 +5,9 @@ const NotFoundError = require('../../exceptions/NotFoundError');
 const { mapAlbumDBToModel, mapSongDBToModel } = require('../../utils');
 
 class AlbumService {
-  constructor() {
+  constructor(cacheService) {
     this._pool = new Pool();
+    this._cacheService = cacheService;
   }
 
   async addAlbum({ name, year }) {
@@ -102,68 +103,67 @@ class AlbumService {
       );
     }
   }
-  // async validateLikeAlbum(userId, albumId) {
-  //   const query = {
-  //     text: 'SELECT * FROM user_album_likes WHERE user_id = $1 AND album_id = $2',
-  //     values: [userId, albumId],
-  //   };
-  //   const result = await this._pool.query(query);
-  //   if (!result.rows.length) {
-  //     return false;
-  //   }
-  //   return true;
-  // }
+  async validateLikeAlbum(userId, albumId) {
+    const query = {
+      text: 'SELECT * FROM user_album_likes WHERE user_id = $1 AND album_id = $2',
+      values: [userId, albumId],
+    };
+    const result = await this._pool.query(query);
+    if (!result.rows.length) {
+      return false;
+    }
+    return true;
+  }
+  async addAlbumLikes(userId, albumId) {
+    const id = nanoid(16);
 
-  // async addAlbumLikes(userId, albumId) {
-  //   const id = nanoid(16);
+    const query = {
+      text: 'INSERT INTO user_album_likes VALUES($1, $2, $3) RETURNING id',
+      values: [id, userId, albumId],
+    };
 
-  //   const query = {
-  //     text: 'INSERT INTO user_album_likes VALUES($1, $2, $3) RETURNING id',
-  //     values: [id, userId, albumId],
-  //   };
+    const result = await this._pool.query(query);
 
-  //   const result = await this._pool.query(query);
+    if (!result.rows[0].id) {
+      throw new InvariantError('Album Like gagal ditambahkan');
+    }
+    await this._cacheService.delete(`likes:${albumId}`);
+    return result.rows[0].id;
+  }
 
-  //   if (!result.rows[0].id) {
-  //     throw new InvariantError('Album Like gagal ditambahkan');
-  //   }
-  //   await this._cacheService.delete(`likes:${albumId}`);
-  //   return result.rows[0].id;
-  // }
+  async getAlbumLikes(id) {
+    try {
+      const customHeader = 'cache';
+      const likes = await this._cacheService.get(`likes:${id}`);
+      return { customHeader, likes: +likes };
+    } catch {
+      await this.getAlbumById(id);
 
-  // async getAlbumLikes(id) {
-  //   try {
-  //     const customHeader = 'cache';
-  //     const likes = await this._cacheService.get(`likes:${id}`);
-  //     return { customHeader, likes: +likes };
-  //   } catch {
-  //     await this.getAlbumById(id);
+      const customHeader = 'server';
+      const query = {
+        text: 'SELECT * FROM user_album_likes WHERE album_id = $1',
+        values: [id],
+      };
 
-  //     const customHeader = 'server';
-  //     const query = {
-  //       text: 'SELECT * FROM user_album_likes WHERE album_id = $1',
-  //       values: [id],
-  //     };
+      const result = await this._pool.query(query);
+      const likes = result.rowCount;
+      await this._cacheService.set(`likes:${id}`, likes);
+      return { customHeader, likes };
+    }
+  }
 
-  //     const result = await this._pool.query(query);
-  //     const likes = result.rowCount;
-  //     await this._cacheService.set(`likes:${id}`, likes);
-  //     return { customHeader, likes };
-  //   }
-  // }
-
-  // async deleteAlbumLike(id, userId) {
-  //   await this.getAlbumById(id);
-  //   const query = {
-  //     text: 'DELETE FROM user_album_likes WHERE user_id = $1 AND album_id = $2 RETURNING id',
-  //     values: [userId, id],
-  //   };
-  //   const result = await this._pool.query(query);
-  //   if (!result.rows.length) {
-  //     throw new NotFoundError('Id tidak ditemukan');
-  //   }
-  //   await this._cacheService.delete(`likes:${id}`);
-  // }
+  async deleteAlbumLike(id, userId) {
+    await this.getAlbumById(id);
+    const query = {
+      text: 'DELETE FROM user_album_likes WHERE user_id = $1 AND album_id = $2 RETURNING id',
+      values: [userId, id],
+    };
+    const result = await this._pool.query(query);
+    if (!result.rows.length) {
+      throw new NotFoundError('Id tidak ditemukan');
+    }
+    await this._cacheService.delete(`likes:${id}`);
+  }
 
 }
 

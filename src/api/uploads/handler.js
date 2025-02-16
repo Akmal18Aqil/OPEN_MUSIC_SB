@@ -32,7 +32,7 @@ class UploadsHandler {
 
       const filename = await this._service.writeFile(cover, cover.hapi);
       const baseUrl = `http://${process.env.HOST}:${process.env.PORT}`;
-      const coverUrl = `${baseUrl}/api/uploads/file/pictures/${filename}`;
+      const coverUrl = `${baseUrl}/uploads/pictures/${filename}`;
 
       await this._albumsService.updateCoverAlbumById(albumId, coverUrl);
 

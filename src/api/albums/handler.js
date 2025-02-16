@@ -8,6 +8,9 @@ class AlbumHandler {
     this.getAlbumByIdHandler = this.getAlbumByIdHandler.bind(this);
     this.putAlbumByIdHandler = this.putAlbumByIdHandler.bind(this);
     this.deleteAlbumByIdHandler = this.deleteAlbumByIdHandler.bind(this);
+    this.postAlbumLikeHandler = this.postAlbumLikeHandler.bind(this);
+    this.getAlbumLikeHandler = this.getAlbumLikeHandler.bind(this);
+    this.deleteAlbumLikeHandler = this.deleteAlbumLikeHandler.bind(this);
   }
 
   async postAlbumHandler(request, h) {
@@ -69,6 +72,63 @@ class AlbumHandler {
       status: 'success',
       message: 'Album berhasil dihapus',
     };
+  }
+  async postAlbumLikeHandler(request, h) {
+    const { id: albumId } = request.params;
+    const { id: userId } = request.auth.credentials;
+
+    console.log('User ID:', userId); // Debug userId
+    console.log('Album ID:', albumId); // Debug albumId
+
+    await this._service.getAlbumById(albumId);
+
+    const alreadyLike = await this._service.validateLikeAlbum(userId, albumId);
+    if (!alreadyLike) {
+      await this._service.addAlbumLikes(userId, albumId);
+    } else {
+      const response = h.response({
+        status: 'fail',
+        message: 'like untuk album hanya bisa satu kali',
+      });
+      response.code(400);
+      return response;
+    }
+
+    const response = h.response({
+      status: 'success',
+      message: 'Like berhasil ditambahkan',
+    });
+    response.code(201);
+    return response;
+  }
+
+  async getAlbumLikeHandler(request, h) {
+    const { id: albumId } = request.params;
+    const { customHeader, likes } = await this._service.getAlbumLikes(albumId);
+
+    const response = h.response({
+      status: 'success',
+      data: {
+        likes,
+      },
+    });
+    response.header('X-Data-Source', customHeader);
+    response.code(200);
+    return response;
+  }
+
+  async deleteAlbumLikeHandler(request, h) {
+    const { id: albumId } = request.params;
+    const { id: userId } = request.auth.credentials;
+
+    await this._service.deleteAlbumLike(albumId, userId);
+
+    const response = h.response({
+      status: 'success',
+      message: 'Berhasil menghapus album like',
+    });
+    response.code(200);
+    return response;
   }
 }
 

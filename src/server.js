@@ -58,12 +58,12 @@ const init = async () => {
   const songsService = new SongService();
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
-  const collaborationService = new CollaborationsService();
+  const collaborationService = new CollaborationsService(cacheService);
   const playlistsService = new PlaylistsService(collaborationService);
   const playlistSongsService = new PlaylistSongsService();
   const playlistSongsActivitiesService = new PlaylistSongsActivitiesService();
   const storageService = new StorageService(
-    path.resolve(__dirname, 'api/uploads/file/pictures')
+    path.resolve(__dirname, 'api/uploads/file/pictures'),
   );
   const server = Hapi.server({
     port: process.env.PORT,
@@ -83,8 +83,7 @@ const init = async () => {
     },
     {
       plugin: Inert,
-    }
-
+    },
 
   ]);
   // ini mendefinisikan strategy autentikasi jwt
@@ -204,26 +203,26 @@ const init = async () => {
       const { statusCode, payload } = response.output;
 
       switch (statusCode) {
-      case 401:
-        return h.response(payload).code(401);
-      case 404:
-        return h.response(payload).code(404);
-      case 413: 
-        return h
-          .response({
-            status: 'fail',
-            message: 'Ukuran file terlalu besar, maksimal 512 KB',
-          })
-          .code(413);
-      default:
-        console.log(response);
-        return h
-          .response({
-            status: 'error',
-            error: payload.error,
-            message: payload.message,
-          })
-          .code(500);
+        case 401:
+          return h.response(payload).code(401);
+        case 404:
+          return h.response(payload).code(404);
+        case 413:
+          return h
+            .response({
+              status: 'fail',
+              message: 'Ukuran file terlalu besar, maksimal 512 KB',
+            })
+            .code(413);
+        default:
+          console.log(response);
+          return h
+            .response({
+              status: 'error',
+              error: payload.error,
+              message: payload.message,
+            })
+            .code(500);
       }
     }
 

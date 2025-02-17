@@ -5,6 +5,9 @@
     "env": {
         "node": true
     },
+    "parserOptions": {
+        "ecmaVersion": 2022
+    },
     "rules": {
         "max-len": ["error", { "code": 155 }],
         "no-console": "off",
@@ -36,7 +39,12 @@
                     "_collaborationsService",
                     "_playlistsService",
                     "_playlistSongsService",
-                    "_playlistService"
+                    "_playlistService",
+                    "_albumsService",
+                    "_cacheService",
+                    "_client",
+                    "_folder",
+                    "_exports"
                 ]
             }
         ],

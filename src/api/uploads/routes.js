@@ -21,7 +21,7 @@ const routes = (handler) => [
       directory: {
         path: path.resolve(__dirname, 'file'),
         redirectToSlash: true,
-        
+
       },
     },
   },

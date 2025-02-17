@@ -1,4 +1,6 @@
-const mapAlbumDBToModel = ({ id, name, year, coverUrl }) => ({
+const mapAlbumDBToModel = ({
+  id, name, year, coverUrl,
+}) => ({
   id,
   name,
   year,

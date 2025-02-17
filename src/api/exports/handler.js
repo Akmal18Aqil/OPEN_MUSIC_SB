@@ -22,7 +22,7 @@ class ExportsHandler {
     await this._playlistsService.verifyPlaylistAccess(playlistId, credentialId);
     await this._service.sendMessage(
       'export:playlists',
-      JSON.stringify(message)
+      JSON.stringify(message),
     );
 
     const response = h.response({

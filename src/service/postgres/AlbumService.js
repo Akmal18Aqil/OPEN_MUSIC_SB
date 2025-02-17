@@ -88,10 +88,11 @@ class AlbumService {
       throw new NotFoundError('Album gagal dihapus. Id tidak ditemukan');
     }
   }
+
   async updateCoverAlbumById(albumId, coverUrl) {
     // memastikan album ada sebelum mengupdate cover
     await this.getAlbumById(albumId);
-    
+
     const query = {
       text: 'UPDATE albums SET "coverUrl" = $1 WHERE id = $2 RETURNING id',
       values: [coverUrl, albumId],
@@ -99,10 +100,11 @@ class AlbumService {
     const result = await this._pool.query(query);
     if (!result.rowCount) {
       throw new NotFoundError(
-        'Cover Album gagal diperbarui. Id tidak ditemukan'
+        'Cover Album gagal diperbarui. Id tidak ditemukan',
       );
     }
   }
+
   async validateLikeAlbum(userId, albumId) {
     const query = {
       text: 'SELECT * FROM user_album_likes WHERE user_id = $1 AND album_id = $2',
@@ -114,6 +116,7 @@ class AlbumService {
     }
     return true;
   }
+
   async addAlbumLikes(userId, albumId) {
     const id = nanoid(16);
 
@@ -164,7 +167,6 @@ class AlbumService {
     }
     await this._cacheService.delete(`likes:${id}`);
   }
-
 }
 
 module.exports = AlbumService;

@@ -29,6 +29,7 @@ class AlbumHandler {
     response.code(201);
     return response;
   }
+
   async getAlbumsHandler() {
     const albums = await this._service.getAlbums();
     return {
@@ -73,6 +74,7 @@ class AlbumHandler {
       message: 'Album berhasil dihapus',
     };
   }
+
   async postAlbumLikeHandler(request, h) {
     const { id: albumId } = request.params;
     const { id: userId } = request.auth.credentials;
